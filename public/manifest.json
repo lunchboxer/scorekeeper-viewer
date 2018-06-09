@@ -1,0 +1,21 @@
+{
+  "short_name": "Scorekeeper",
+  "name": "Scorekeeper-viewer",
+  "description": "A teacher's scoreboard for the classroom",
+  "icons": [
+    {
+      "src": "./icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#5F4B8B",
+  "background_color": "#5F4B8B"
+}

@@ -1,0 +1,32 @@
+.name {
+  padding: 20px;
+  padding-right: 60px;
+  margin: auto 0;
+  font-size: 3em;
+}
+.container {
+  display: flex;
+  width: 100%;
+}
+.stars {
+  display: flex;
+  align-content: center;
+  padding: 0;
+  padding-left: 12px * 2;
+  padding-right: 12px * 2;
+}
+.glow {
+  display: flex;
+  width: 100%;
+  animation: glow 4000ms ease-out 0s;
+}
+@keyframes glow {
+  0%,
+  100% {
+    background-color: none;
+  }
+  50% {
+    box-shadow: 0 0 20px #444;
+    background-color: #444;
+  }
+}
