@@ -1,10 +1,25 @@
 import React, { Component } from 'react'
 import Scoreboard from './Scoreboard'
+import ClassSessionInactive from './ClassSessionInactive'
+import ClassSessionEnded from './ClassSessionEnded'
+import ClassSessionActive from './ClassSessionActive'
 
 class ScoreboardLoader extends Component {
   constructor(props) {
     super(props)
     this.state = {}
+  }
+  switchStage = session => {
+    switch (session.stage) {
+      case 'Active':
+        return <ClassSessionActive session={session} />
+      case 'Started':
+        return <Scoreboard session={session} />
+      case 'Ended':
+        return <ClassSessionEnded session={session} />
+      default:
+        return <ClassSessionInactive session={session} />
+    }
   }
 
   render() {
@@ -24,7 +39,7 @@ class ScoreboardLoader extends Component {
       return (
         <div>
           {sessions[0].studentGroupId ? (
-            <Scoreboard session={sessions[0]} />
+            this.switchStage(sessions[0])
           ) : (
             <h3>
               The class session starting at {sessions[0].startsAt} doesn't have

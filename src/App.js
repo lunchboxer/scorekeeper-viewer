@@ -41,6 +41,16 @@ class App extends Component {
           )
         })
       })
+    client.service('class-sessions').on('patched', patchedSession => {
+      const sessions = this.state.sessions
+      for (var i = 0; i < sessions.length; i++) {
+        if (sessions[i].id === patchedSession.id) {
+          sessions[i] = patchedSession
+          this.setState({ sessions })
+          break
+        }
+      }
+    })
   }
 
   render() {
