@@ -25,7 +25,6 @@ class App extends Component {
         })
         .then(sessions => {
           this.setState({ sessions: sessions.data, login })
-          console.log(JSON.stringify(sessions.data))
         })
     })
     client.service('class-sessions').on('created', session =>

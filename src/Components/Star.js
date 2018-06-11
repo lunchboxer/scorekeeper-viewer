@@ -2,8 +2,15 @@ import React from 'react'
 import './Star.css'
 import 'animate.css'
 
-const Star = ({ index }) => {
+const Star = ({ index, greyed }) => {
   const hue = index * 30
+  var saturation = 100
+  var lightness = 50
+  if (greyed) {
+    saturation = 0
+    lightness = 30
+  }
+
   return (
     <svg
       className="animated flip"
@@ -11,7 +18,7 @@ const Star = ({ index }) => {
         width: '5em',
         padding: '0.3em',
         height: '5em',
-        fill: `hsl(${hue}, 100%, 50%)`
+        fill: `hsl(${hue}, ${saturation}%, ${lightness}%)`
       }}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 32.218 32.218"

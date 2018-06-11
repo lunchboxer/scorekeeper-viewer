@@ -62,18 +62,35 @@ class ScoreboardRow extends Component {
     })
   }
   render() {
-    const { student } = this.props
+    const { student, status } = this.props
     const { points } = this.state
+    if (status === 'absent') {
+      return (
+        <div className="name absent">
+          <span>{student.englishName}</span>
+        </div>
+      )
+    }
     return (
       <div>
         <div className={this.state.glow ? 'glow' : 'container'}>
-          <div className="name">
+          <div
+            className={
+              ['lateLeftEarly', 'leftEarly'].includes(status)
+                ? 'name left'
+                : 'name'
+            }
+          >
             <span>{student.englishName}</span>
           </div>
           {points ? (
             <div className="stars">
               {this.rangeOfPointValues(points).map((point, index) => (
-                <Star index={index} key={index} />
+                <Star
+                  index={index}
+                  key={index}
+                  greyed={['lateLeftEarly', 'leftEarly'].includes(status)}
+                />
               ))}
             </div>
           ) : (

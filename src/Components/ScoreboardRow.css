@@ -4,6 +4,15 @@
   margin: auto 0;
   font-size: 3em;
 }
+.absent {
+  color: #555;
+}
+.left {
+  color: #555;
+}
+Star.left {
+  border: 1px solid red;
+}
 .container {
   display: flex;
   width: 100%;

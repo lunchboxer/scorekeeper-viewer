@@ -23,14 +23,48 @@ class Scoreboard extends Component {
     super(props)
     this.state = {}
   }
+
+  studentAttendanceStatus(student) {
+    if (!this.state.attendances) {
+      return 'absent'
+    }
+    const studentAttendance = this.state.attendances.find(
+      attendance => attendance.studentId === student.id
+    )
+    if (studentAttendance) {
+      return studentAttendance.status
+    } else {
+      return 'absent'
+    }
+  }
   componentDidMount() {
     client
       .service('student-groups')
       .get(this.props.session.studentGroupId)
       .then(group => {
         this.setState({ group })
-        console.log(this.state.group.name)
       })
+    client
+      .service('attendances')
+      .find({ query: { classSessionId: this.props.session.id } })
+      .then(attendances => {
+        this.setState({ attendances: attendances.data })
+      })
+    client.service('attendances').on('created', attendance =>
+      this.setState({
+        attendances: this.state.attendances.concat(attendance)
+      })
+    )
+    client.service('attendances').on('patched', updatedAttendance => {
+      const attendances = this.state.attendances
+      for (var i = 0; i < attendances.length; i++) {
+        if (attendances[i].id === updatedAttendance.id) {
+          attendances[i].status = updatedAttendance.status
+          this.setState({ attendances })
+          break
+        }
+      }
+    })
   }
   render() {
     if (!this.state.group) {
@@ -47,6 +81,7 @@ class Scoreboard extends Component {
               <ScoreboardRow
                 key={student.id}
                 student={student}
+                status={this.studentAttendanceStatus(student)}
                 classSessionId={this.props.session.id}
               />
             ))}
