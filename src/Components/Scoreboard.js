@@ -22,6 +22,8 @@ class Scoreboard extends Component {
   constructor(props) {
     super(props)
     this.state = {}
+    this.attendanceCreatedListener = this.attendanceCreatedListener.bind(this)
+    this.attendanceUpdatedListener = this.attendanceUpdatedListener.bind(this)
   }
 
   studentAttendanceStatus(student) {
@@ -37,6 +39,26 @@ class Scoreboard extends Component {
       return 'absent'
     }
   }
+
+  attendanceCreatedListener(attendance) {
+    if (attendance.classSessionId === this.props.session.id) {
+      this.setState({
+        attendances: this.state.attendances.concat(attendance)
+      })
+    }
+  }
+
+  attendanceUpdatedListener(updatedAttendance) {
+    const attendances = this.state.attendances
+    for (var i = 0; i < attendances.length; i++) {
+      if (attendances[i].id === updatedAttendance.id) {
+        attendances[i].status = updatedAttendance.status
+        this.setState({ attendances })
+        break
+      }
+    }
+  }
+
   componentDidMount() {
     client
       .service('student-groups')
@@ -50,22 +72,19 @@ class Scoreboard extends Component {
       .then(attendances => {
         this.setState({ attendances: attendances.data })
       })
-    client.service('attendances').on('created', attendance =>
-      this.setState({
-        attendances: this.state.attendances.concat(attendance)
-      })
-    )
-    client.service('attendances').on('patched', updatedAttendance => {
-      const attendances = this.state.attendances
-      for (var i = 0; i < attendances.length; i++) {
-        if (attendances[i].id === updatedAttendance.id) {
-          attendances[i].status = updatedAttendance.status
-          this.setState({ attendances })
-          break
-        }
-      }
-    })
+    client.service('attendances').on('created', this.attendanceCreatedListener)
+    client.service('attendances').on('patched', this.attendanceUpdatedListener)
   }
+
+  componentWillUnmount() {
+    client
+      .service('attendances')
+      .removeListener('created', this.attendanceCreatedListener)
+    client
+      .service('attendances')
+      .removeListener('patched', this.attendanceUpdatedListener)
+  }
+
   render() {
     if (!this.state.group) {
       return <h2>Loading group</h2>

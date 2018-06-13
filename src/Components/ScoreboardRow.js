@@ -13,6 +13,7 @@ class ScoreboardRow extends Component {
     this.goodsound = new Audio(goodSoundFile)
     this.badsound = new Audio(badSoundFile)
     this.state = { glow: false }
+    this.pointAddedListener = this.pointAddedListener.bind(this)
   }
   highlightPointsChange = value => {
     if (value > 0) {
@@ -33,11 +34,24 @@ class ScoreboardRow extends Component {
 
   rangeOfPointValues = points => {
     const sum = this.sumOfPointValues(points)
+    if (sum <= 0 ) {
+      return []
+    }
     return [...Array(sum).keys()]
+  }
+  pointAddedListener(point) {
+    // only deal with points relevant to this student and classSession
+    // perhaps istead of having every row process every point, move the state up to scoreboard instead.
+    if (
+      point.studentId === this.props.student.id &&
+      point.classSessionId === this.props.classSessionId
+    ) {
+      this.setState({ points: this.state.points.concat(point) })
+      this.highlightPointsChange(point.value)
+    }
   }
 
   componentDidMount() {
-    // connect to the student service and subscribe to point changes
     client
       .service('points')
       .find({
@@ -49,17 +63,11 @@ class ScoreboardRow extends Component {
       .then(points => {
         this.setState({ points: points.data })
       })
-    client.service('points').on('created', point => {
-      // only deal with points relevant to this student and classSession
-      // perhaps istead of having every row process every point, move the state up to scoreboard instead.
-      if (
-        point.studentId === this.props.student.id &&
-        point.classSessionId === this.props.classSessionId
-      ) {
-        this.setState({ points: this.state.points.concat(point) })
-        this.highlightPointsChange(point.value)
-      }
-    })
+    client.service('points').on('created', this.pointAddedListener)
+  }
+
+  componentWillUnmount() {
+    client.service('points').removeListener('created', this.pointAddedListener)
   }
   render() {
     const { student, status } = this.props
